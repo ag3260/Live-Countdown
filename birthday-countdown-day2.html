@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 2 — counting down to Dhriti's birthday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Caveat:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root{
+    --lav-deep: #7c5cbf;
+    --lav-mid: #a98be0;
+    --lav-light: #e3d6f7;
+    --gold: #eec97d;
+    --gold-soft: #f6ddab;
+    --rose: #f0b8c6;
+    --cream: #fbf6ee;
+    --ink: #3a2b4a;
+  }
+
+  html, body{
+    margin: 0; padding: 0;
+    min-height: 100%;
+    font-family: 'Quicksand', sans-serif;
+    color: var(--ink);
+    background: radial-gradient(ellipse at 50% 0%, var(--lav-light) 0%, var(--cream) 60%);
+    overflow-x: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  .bg-float{ position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .fl{ position: absolute; bottom: -10%; opacity: 0.55; animation: floatUp linear infinite; }
+  @keyframes floatUp{
+    0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.6; }
+    100% { transform: translateY(-115vh) translateX(-22px) rotate(-30deg); opacity: 0; }
+  }
+
+  .sparkle{
+    position: absolute;
+    width: 4px; height: 4px;
+    background: var(--gold);
+    border-radius: 50%;
+    opacity: 0;
+    animation: twinkle 2.6s ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%,100% { opacity: 0; transform: scale(0.6); }
+    50%     { opacity: 0.9; transform: scale(1.3); }
+  }
+
+  .wrap{
+    position: relative; z-index: 1;
+    min-height: 100svh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 2.4rem 1.3rem 3rem;
+  }
+
+  /* ===== countdown ===== */
+  .countdown-title{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: clamp(1.5rem, 5.5vw, 2rem);
+    color: var(--lav-deep);
+    margin: 0 0 1.1rem;
+  }
+  .countdown-title b{
+    font-style: normal;
+    font-family: 'Quicksand', sans-serif;
+    color: var(--gold);
+    text-shadow: 0 0 12px rgba(238,201,125,0.5);
+  }
+
+  .countdown{ display: flex; gap: 10px; margin-bottom: 2.4rem; }
+  .cd-unit{
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.7);
+    border-radius: 16px;
+    padding: 0.8rem 0.9rem;
+    min-width: 64px;
+    box-shadow: 0 10px 24px rgba(124,92,191,0.18);
+  }
+  .cd-num{
+    font-weight: 700;
+    font-size: clamp(1.3rem, 5vw, 1.8rem);
+    color: var(--lav-deep);
+    font-variant-numeric: tabular-nums;
+  }
+  .cd-label{
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0.55;
+    margin-top: 0.2rem;
+  }
+
+  /* ===== blooming flower ===== */
+  .bloom-wrap{
+    position: relative;
+    width: clamp(150px, 42vw, 190px);
+    height: clamp(150px, 42vw, 190px);
+    margin-bottom: 1rem;
+    cursor: pointer;
+  }
+  .bloom-glow{
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(238,201,125,0.55), rgba(238,201,125,0) 70%);
+    opacity: 0.7;
+    animation: glowPulse 3s ease-in-out infinite;
+  }
+  @keyframes glowPulse{ 0%,100%{ transform: scale(1); opacity: 0.5; } 50%{ transform: scale(1.12); opacity: 0.85; } }
+
+  .flower{
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .petal{
+    position: absolute;
+    width: 46%; height: 66%;
+    background: linear-gradient(180deg, var(--rose), var(--lav-mid));
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    transform-origin: bottom center;
+    transition: transform 0.7s cubic-bezier(.3,1.4,.4,1), opacity 0.6s ease;
+    opacity: 0.96;
+  }
+  .petal:nth-child(1){ transform: rotate(0deg) translateY(-4%); }
+  .petal:nth-child(2){ transform: rotate(72deg) translateY(-4%); }
+  .petal:nth-child(3){ transform: rotate(144deg) translateY(-4%); }
+  .petal:nth-child(4){ transform: rotate(216deg) translateY(-4%); }
+  .petal:nth-child(5){ transform: rotate(288deg) translateY(-4%); }
+
+  .bloom-wrap.opened .petal{
+    transform: rotate(var(--angle)) translateY(-4%) scale(1.15) rotateX(60deg);
+    opacity: 0;
+  }
+  .petal:nth-child(1){ --angle: 0deg; }
+  .petal:nth-child(2){ --angle: 72deg; }
+  .petal:nth-child(3){ --angle: 144deg; }
+  .petal:nth-child(4){ --angle: 216deg; }
+  .petal:nth-child(5){ --angle: 288deg; }
+
+  .flower-center{
+    position: absolute;
+    width: 34%; height: 34%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--gold-soft), var(--gold) 60%, #c99a3f 100%);
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.4), inset 0 2px 4px rgba(255,255,255,0.5);
+    z-index: 2;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    transition: transform 0.5s ease;
+  }
+  .bloom-wrap.opened .flower-center{ transform: scale(1.25); }
+
+  .tap-hint{
+    font-size: 0.85rem; color: var(--lav-deep);
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:.5;} 50%{opacity:1;} }
+  .bloom-wrap.opened ~ .tap-hint{ display: none; }
+
+  /* ===== message card ===== */
+  .message-card{
+    max-width: 460px; width: 100%;
+    background: linear-gradient(180deg, #fffdfa, #fbf3e6);
+    border-radius: 24px;
+    padding: clamp(1.7rem, 6vw, 2.5rem);
+    box-shadow: 0 20px 46px rgba(124,92,191,0.25);
+    border: 1px solid rgba(238,201,125,0.5);
+    margin-top: 1.2rem;
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none;
+    position: relative;
+  }
+  .message-card::before{
+    content: "";
+    position: absolute; inset: 8px;
+    border: 1px solid rgba(238,201,125,0.4);
+    border-radius: 18px;
+    pointer-events: none;
+  }
+  .message-card.show{ opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+  .message-emoji{ font-size: 1.9rem; margin-bottom: 0.5rem; display: inline-block; }
+  .message-title{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: clamp(1.5rem, 5.5vw, 1.9rem);
+    color: var(--lav-deep);
+    margin: 0.2rem 0 0.9rem;
+  }
+  .message-body{
+    font-size: clamp(0.98rem, 3.2vw, 1.08rem);
+    line-height: 1.78;
+  }
+  .message-tag{
+    margin-top: 1.3rem;
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    color: var(--lav-deep);
+  }
+
+  .petal-fall{ position: fixed; inset: 0; pointer-events: none; z-index: 6; }
+  .pf-piece{ position: absolute; top: 50%; left: 50%; width: 8px; height: 11px; border-radius: 50% 50% 50% 0; }
+</style>
+</head>
+<body>
+
+<div class="bg-float" id="bgFloat"></div>
+
+<div class="wrap">
+
+  <p class="countdown-title"><b id="cdBigNumber">14</b> &nbsp;days until your birthday, Dhriti</p>
+  <div class="countdown" id="countdown"></div>
+
+  <div class="bloom-wrap" id="bloomWrap" role="button" tabindex="0" aria-label="Tap the flower to open today's message">
+    <div class="bloom-glow"></div>
+    <div class="flower">
+      <div class="petal"></div>
+      <div class="petal"></div>
+      <div class="petal"></div>
+      <div class="petal"></div>
+      <div class="petal"></div>
+      <div class="flower-center">✨</div>
+    </div>
+  </div>
+  <p class="tap-hint" id="tapHint">tap the flower to let it bloom</p>
+
+  <div class="message-card" id="messageCard">
+    <span class="message-emoji" id="msgEmoji">🌷</span>
+    <h2 class="message-title" id="msgTitle">for you, Dhriti</h2>
+    <p class="message-body" id="msgBody"></p>
+    <p class="message-tag">— Aryan 🤍</p>
+  </div>
+
+</div>
+
+<div class="petal-fall" id="petalFall"></div>
+
+<script>
+  /* =========================================================
+     CUSTOMIZE HERE — the only part you need to touch each day
+     ========================================================= */
+  const CONFIG = {
+    herName: "Dhriti",
+    yourName: "Aryan",
+    birthdayISO: "2026-09-06T00:00:00",
+    todayEmoji: "🌷",
+    todayTitle: "for you, Dhriti",
+    todayMessage: "Fourteen days left now until your birthday. I like that this means I get to think of a new reason, a new memory, or a new small thing to say to you, every single day until it's actually your day. Consider this bloom your reminder for today: you're doing wonderfully, and you're loved exactly as you are."
+  };
+
+  document.getElementById('msgEmoji').textContent = CONFIG.todayEmoji;
+  document.getElementById('msgTitle').textContent = CONFIG.todayTitle;
+  document.getElementById('msgBody').textContent = CONFIG.todayMessage;
+
+  /* ================= live countdown ================= */
+  const countdownEl = document.getElementById('countdown');
+  const cdBigNumber = document.getElementById('cdBigNumber');
+  const units = ['days','hours','minutes','seconds'];
+  const unitEls = {};
+  units.forEach(u=>{
+    const div = document.createElement('div');
+    div.className = 'cd-unit';
+    div.innerHTML = `<div class="cd-num" id="cd-${u}">0</div><div class="cd-label">${u}</div>`;
+    countdownEl.appendChild(div);
+    unitEls[u] = div.querySelector('.cd-num');
+  });
+
+  const target = new Date(CONFIG.birthdayISO).getTime();
+
+  function updateCountdown(){
+    const now = Date.now();
+    let diff = Math.max(0, target - now);
+
+    const days = Math.floor(diff / (1000*60*60*24));
+    diff -= days * (1000*60*60*24);
+    const hours = Math.floor(diff / (1000*60*60));
+    diff -= hours * (1000*60*60);
+    const minutes = Math.floor(diff / (1000*60));
+    diff -= minutes * (1000*60);
+    const seconds = Math.floor(diff / 1000);
+
+    unitEls.days.textContent = days;
+    unitEls.hours.textContent = String(hours).padStart(2,'0');
+    unitEls.minutes.textContent = String(minutes).padStart(2,'0');
+    unitEls.seconds.textContent = String(seconds).padStart(2,'0');
+    cdBigNumber.textContent = days;
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  /* ================= bloom interaction ================= */
+  const bloomWrap = document.getElementById('bloomWrap');
+  const messageCard = document.getElementById('messageCard');
+  const tapHint = document.getElementById('tapHint');
+  const petalFall = document.getElementById('petalFall');
+  const petalColors = ['#f0b8c6', '#a98be0', '#eec97d', '#e3d6f7'];
+
+  function launchPetals(){
+    for(let i=0;i<26;i++){
+      const p = document.createElement('div');
+      p.className = 'pf-piece';
+      p.style.background = petalColors[Math.floor(Math.random()*petalColors.length)];
+      p.style.top = (20 + Math.random()*15) + '%';
+      const dx = (Math.random()-0.5) * 480;
+      const dy = 260 + Math.random()*280;
+      const rot = Math.random()*540 - 270;
+      p.animate([
+        { transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 1 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) rotate(${rot}deg)`, opacity: 0 }
+      ], { duration: 1500 + Math.random()*600, easing: 'cubic-bezier(.2,.7,.3,1)' });
+      petalFall.appendChild(p);
+      setTimeout(()=> p.remove(), 2300);
+    }
+  }
+
+  function openBloom(){
+    if(bloomWrap.classList.contains('opened')) return;
+    bloomWrap.classList.add('opened');
+    tapHint.style.display = 'none';
+    launchPetals();
+    setTimeout(()=>{
+      messageCard.classList.add('show');
+      messageCard.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 400);
+  }
+  bloomWrap.addEventListener('click', openBloom);
+  bloomWrap.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openBloom(); }
+  });
+
+  /* ================= ambience: floating + sparkle ================= */
+  const bgFloat = document.getElementById('bgFloat');
+  const bgEmojis = ['🌸','💜','✨','🌼'];
+  for(let i=0;i<12;i++){
+    const el = document.createElement('div');
+    el.className = 'fl';
+    el.textContent = bgEmojis[Math.floor(Math.random()*bgEmojis.length)];
+    el.style.left = (Math.random()*100)+'vw';
+    el.style.fontSize = (1 + Math.random()*1.1)+'rem';
+    el.style.animationDuration = (9 + Math.random()*10)+'s';
+    el.style.animationDelay = (Math.random()*10)+'s';
+    bgFloat.appendChild(el);
+  }
+  for(let i=0;i<20;i++){
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.style.left = (Math.random()*100)+'vw';
+    s.style.top = (Math.random()*100)+'vh';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    bgFloat.appendChild(s);
+  }
+</script>
+
+</body>
+</html>
