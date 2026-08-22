@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 1 — counting down to Dhriti's birthday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root{
+    --pink-deep: #ff6f9c;
+    --pink-mid: #ffa6c1;
+    --pink-light: #ffd6e4;
+    --peach: #ffe3c9;
+    --cream: #fff7f2;
+    --purple: #b892ff;
+    --gold: #f2c879;
+    --ink: #4a2b3a;
+  }
+
+  html, body{
+    margin: 0; padding: 0;
+    min-height: 100%;
+    font-family: 'Quicksand', sans-serif;
+    color: var(--ink);
+    background: linear-gradient(160deg, var(--pink-light), var(--peach) 55%, var(--cream));
+    overflow-x: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  .bg-float{ position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .fl{ position: absolute; bottom: -10%; opacity: 0.5; animation: floatUp linear infinite; }
+  @keyframes floatUp{
+    0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.55; }
+    100% { transform: translateY(-115vh) translateX(24px) rotate(30deg); opacity: 0; }
+  }
+
+  .wrap{
+    position: relative; z-index: 1;
+    min-height: 100svh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 2.4rem 1.3rem 3rem;
+  }
+
+  .day-badge{
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: white;
+    background: linear-gradient(135deg, var(--pink-deep), var(--purple));
+    padding: 0.45rem 1.1rem;
+    border-radius: 999px;
+    margin-bottom: 1.6rem;
+    box-shadow: 0 8px 18px rgba(255,111,156,0.35);
+  }
+
+  /* ===== countdown ===== */
+  .countdown-title{
+    font-family: 'Caveat', cursive;
+    font-size: clamp(1.6rem, 6vw, 2.1rem);
+    color: var(--pink-deep);
+    margin: 0 0 1rem;
+  }
+  .countdown-title b{ color: var(--purple); }
+
+  .countdown{
+    display: flex; gap: 10px; margin-bottom: 2.2rem;
+  }
+  .cd-unit{
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 16px;
+    padding: 0.8rem 0.9rem;
+    min-width: 64px;
+    box-shadow: 0 10px 24px rgba(255,111,156,0.2);
+  }
+  .cd-num{
+    font-weight: 700;
+    font-size: clamp(1.3rem, 5vw, 1.8rem);
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .cd-label{
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0.55;
+    margin-top: 0.2rem;
+  }
+
+  /* ===== gift box ===== */
+  .gift-wrap{ cursor: pointer; margin-bottom: 1.2rem; }
+  .gift{
+    width: clamp(140px, 40vw, 180px);
+    height: clamp(120px, 34vw, 150px);
+    position: relative;
+    margin: 0 auto;
+    filter: drop-shadow(0 14px 26px rgba(255,111,156,0.35));
+  }
+  .gift-base{
+    position: absolute; bottom: 0; left: 0; right: 0; height: 70%;
+    background: linear-gradient(160deg, var(--pink-mid), var(--pink-deep));
+    border-radius: 8px;
+  }
+  .gift-lid{
+    position: absolute; top: 18%; left: -6%; right: -6%; height: 22%;
+    background: linear-gradient(160deg, var(--purple), #9a6fe0);
+    border-radius: 8px;
+    transform-origin: bottom center;
+    transition: transform 0.6s cubic-bezier(.34,1.5,.4,1), opacity 0.5s ease;
+  }
+  .ribbon-v{
+    position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 16%;
+    background: var(--gold);
+  }
+  .ribbon-h{
+    position: absolute; top: 18%; left: -6%; right: -6%; height: 8%;
+    background: var(--gold);
+  }
+  .bow{
+    position: absolute; top: 6%; left: 50%; transform: translateX(-50%);
+    font-size: 1.6rem;
+  }
+  .gift-wrap.opened .gift-lid{
+    transform: translateY(-70%) rotate(-18deg);
+    opacity: 0;
+  }
+  .gift-glow{
+    position: absolute; top: 20%; left: 50%; transform: translate(-50%,-50%) scale(0);
+    width: 120px; height: 120px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,214,228,0));
+    pointer-events: none;
+    transition: transform 0.6s ease, opacity 0.6s ease;
+    opacity: 0;
+  }
+  .gift-wrap.opened .gift-glow{ transform: translate(-50%,-50%) scale(2.4); opacity: 1; }
+
+  .tap-hint{
+    font-size: 0.85rem; color: var(--pink-deep);
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:.5;} 50%{opacity:1;} }
+  .gift-wrap.opened + .tap-hint{ display: none; }
+
+  /* ===== message card ===== */
+  .message-card{
+    max-width: 460px; width: 100%;
+    background: #fffdfb;
+    border-radius: 24px;
+    padding: clamp(1.6rem, 6vw, 2.4rem);
+    box-shadow: 0 20px 46px rgba(255,111,156,0.25);
+    border: 1px solid rgba(255,166,193,0.5);
+    margin-top: 0.6rem;
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+  }
+  .message-card.show{
+    opacity: 1; transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .message-emoji{ font-size: 2rem; margin-bottom: 0.4rem; display: inline-block; }
+  .message-title{
+    font-family: 'Caveat', cursive;
+    font-size: clamp(1.7rem, 6vw, 2.1rem);
+    color: var(--pink-deep);
+    margin: 0.2rem 0 0.9rem;
+  }
+  .message-body{
+    font-size: clamp(0.98rem, 3.2vw, 1.08rem);
+    line-height: 1.75;
+  }
+  .message-tag{
+    margin-top: 1.3rem;
+    font-family: 'Caveat', cursive;
+    font-size: 1.4rem;
+    color: var(--purple);
+  }
+
+  .confetti{ position: fixed; inset: 0; pointer-events: none; z-index: 6; }
+  .cf-piece{ position: absolute; top: 50%; left: 50%; width: 7px; height: 10px; }
+</style>
+</head>
+<body>
+
+<div class="bg-float" id="bgFloat"></div>
+
+<div class="wrap">
+
+  <div class="day-badge" id="dayBadge">Day 1</div>
+
+  <p class="countdown-title"><b id="cdBigNumber">15</b> days until your birthday, Dhriti 🎂</p>
+  <div class="countdown" id="countdown"></div>
+
+  <div class="gift-wrap" id="giftWrap" role="button" tabindex="0" aria-label="Open today's gift">
+    <div class="gift">
+      <div class="gift-glow"></div>
+      <div class="gift-base"></div>
+      <div class="ribbon-v"></div>
+      <div class="gift-lid">
+        <div class="ribbon-h"></div>
+      </div>
+      <div class="bow">🎀</div>
+    </div>
+  </div>
+  <p class="tap-hint" id="tapHint">tap today's gift</p>
+
+  <div class="message-card" id="messageCard">
+    <span class="message-emoji" id="msgEmoji">🎁</span>
+    <h2 class="message-title" id="msgTitle">Day 1</h2>
+    <p class="message-body" id="msgBody"></p>
+    <p class="message-tag">— Aryan 🤍</p>
+  </div>
+
+</div>
+
+<div class="confetti" id="confetti"></div>
+
+<script>
+  /* =========================================================
+     CUSTOMIZE HERE — the only part you need to touch each day
+     ========================================================= */
+  const CONFIG = {
+    herName: "Dhriti",
+    yourName: "Aryan",
+    dayNumber: 1,            // bump this by 1 each day (1, 2, 3 ... up to birthday)
+    birthdayISO: "2026-09-06T00:00:00", // her birthday, fixed
+    todayEmoji: "🎁",
+    todayTitle: "Day 1",
+    todayMessage: "Fifteen days to go until your birthday, and I wanted to start the countdown properly — with something small, every single day, until we get there. Today's isn't anything fancy, just the first step: I'm so glad I get to count down to your day with you."
+  };
+
+  document.getElementById('dayBadge').textContent = `Day ${CONFIG.dayNumber}`;
+  document.getElementById('msgEmoji').textContent = CONFIG.todayEmoji;
+  document.getElementById('msgTitle').textContent = CONFIG.todayTitle;
+  document.getElementById('msgBody').textContent = CONFIG.todayMessage;
+
+  /* ================= live countdown ================= */
+  const countdownEl = document.getElementById('countdown');
+  const cdBigNumber = document.getElementById('cdBigNumber');
+  const units = ['days','hours','minutes','seconds'];
+  const unitEls = {};
+  units.forEach(u=>{
+    const div = document.createElement('div');
+    div.className = 'cd-unit';
+    div.innerHTML = `<div class="cd-num" id="cd-${u}">0</div><div class="cd-label">${u}</div>`;
+    countdownEl.appendChild(div);
+    unitEls[u] = div.querySelector('.cd-num');
+  });
+
+  const target = new Date(CONFIG.birthdayISO).getTime();
+
+  function updateCountdown(){
+    const now = Date.now();
+    let diff = Math.max(0, target - now);
+
+    const days = Math.floor(diff / (1000*60*60*24));
+    diff -= days * (1000*60*60*24);
+    const hours = Math.floor(diff / (1000*60*60));
+    diff -= hours * (1000*60*60);
+    const minutes = Math.floor(diff / (1000*60));
+    diff -= minutes * (1000*60);
+    const seconds = Math.floor(diff / 1000);
+
+    unitEls.days.textContent = days;
+    unitEls.hours.textContent = String(hours).padStart(2,'0');
+    unitEls.minutes.textContent = String(minutes).padStart(2,'0');
+    unitEls.seconds.textContent = String(seconds).padStart(2,'0');
+    cdBigNumber.textContent = days;
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  /* ================= gift open interaction ================= */
+  const giftWrap = document.getElementById('giftWrap');
+  const messageCard = document.getElementById('messageCard');
+  const tapHint = document.getElementById('tapHint');
+  const confettiEl = document.getElementById('confetti');
+  const confColors = ['#ff6f9c', '#ffa6c1', '#b892ff', '#f2c879', '#ffd6e4'];
+
+  function launchConfetti(){
+    for(let i=0;i<40;i++){
+      const p = document.createElement('div');
+      p.className = 'cf-piece';
+      p.style.background = confColors[Math.floor(Math.random()*confColors.length)];
+      p.style.top = (20 + Math.random()*20) + '%';
+      const dx = (Math.random()-0.5) * 500;
+      const dy = 300 + Math.random()*300;
+      const rot = Math.random()*720 - 360;
+      p.animate([
+        { transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 1 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) rotate(${rot}deg)`, opacity: 0 }
+      ], { duration: 1400 + Math.random()*600, easing: 'cubic-bezier(.2,.7,.3,1)' });
+      confettiEl.appendChild(p);
+      setTimeout(()=> p.remove(), 2200);
+    }
+  }
+
+  function openGift(){
+    if(giftWrap.classList.contains('opened')) return;
+    giftWrap.classList.add('opened');
+    tapHint.style.display = 'none';
+    launchConfetti();
+    setTimeout(()=>{
+      messageCard.classList.add('show');
+      messageCard.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 350);
+  }
+  giftWrap.addEventListener('click', openGift);
+  giftWrap.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openGift(); }
+  });
+
+  /* ================= background floating hearts ================= */
+  const bgFloat = document.getElementById('bgFloat');
+  const bgEmojis = ['💗','💕','🌸','✨','🎈'];
+  for(let i=0;i<14;i++){
+    const el = document.createElement('div');
+    el.className = 'fl';
+    el.textContent = bgEmojis[Math.floor(Math.random()*bgEmojis.length)];
+    el.style.left = (Math.random()*100)+'vw';
+    el.style.fontSize = (1 + Math.random()*1.1)+'rem';
+    el.style.animationDuration = (9 + Math.random()*10)+'s';
+    el.style.animationDelay = (Math.random()*10)+'s';
+    bgFloat.appendChild(el);
+  }
+</script>
+
+</body>
+</html>
