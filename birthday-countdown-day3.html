@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Dhriti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Caveat:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root{
+    --night-deep: #0f1030;
+    --night-mid: #1c1f4a;
+    --night-light: #33396e;
+    --gold: #f2cf7e;
+    --gold-soft: #fbe6b0;
+    --lilac: #b6a6ff;
+    --ink: #f4f1ff;
+  }
+
+  html, body{
+    margin: 0; padding: 0;
+    min-height: 100%;
+    font-family: 'Quicksand', sans-serif;
+    color: var(--ink);
+    background: radial-gradient(ellipse at 50% 0%, var(--night-light) 0%, var(--night-mid) 45%, var(--night-deep) 100%);
+    overflow-x: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  .stars-bg{ position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star{
+    position: absolute;
+    width: 3px; height: 3px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0;
+    animation: twinkle ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%,100% { opacity: 0.15; transform: scale(0.8); }
+    50%     { opacity: 1; transform: scale(1.4); }
+  }
+
+  .shooting{
+    position: absolute;
+    width: 90px; height: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0), var(--gold-soft));
+    border-radius: 2px;
+    opacity: 0;
+    animation: shoot linear infinite;
+  }
+  @keyframes shoot{
+    0%   { opacity: 0; transform: translate(0,0) rotate(-25deg); }
+    5%   { opacity: 1; }
+    35%  { opacity: 0; transform: translate(-260px, 180px) rotate(-25deg); }
+    100% { opacity: 0; }
+  }
+
+  .wrap{
+    position: relative; z-index: 1;
+    min-height: 100svh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 2.4rem 1.3rem 3rem;
+  }
+
+  /* ===== countdown ===== */
+  .countdown-title{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.4rem, 5.2vw, 1.9rem);
+    color: var(--lilac);
+    margin: 0 0 1.2rem;
+  }
+  .countdown-title b{
+    font-style: normal;
+    font-family: 'Quicksand', sans-serif;
+    color: var(--gold);
+    text-shadow: 0 0 14px rgba(242,207,126,0.6);
+  }
+
+  .countdown{ display: flex; gap: 10px; margin-bottom: 2.6rem; }
+  .cd-unit{
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 0.8rem 0.9rem;
+    min-width: 64px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+  }
+  .cd-num{
+    font-weight: 700;
+    font-size: clamp(1.3rem, 5vw, 1.8rem);
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .cd-label{
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0.55;
+    margin-top: 0.2rem;
+  }
+
+  /* ===== wishing star ===== */
+  .star-wrap{
+    position: relative;
+    width: clamp(140px, 40vw, 180px);
+    height: clamp(140px, 40vw, 180px);
+    margin-bottom: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .star-glow{
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(242,207,126,0.5), rgba(242,207,126,0) 70%);
+    animation: glowPulse 3s ease-in-out infinite;
+  }
+  @keyframes glowPulse{ 0%,100%{ transform: scale(1); opacity: 0.5; } 50%{ transform: scale(1.15); opacity: 0.9; } }
+
+  .big-star{
+    font-size: clamp(3.4rem, 14vw, 4.6rem);
+    filter: drop-shadow(0 0 18px rgba(242,207,126,0.7));
+    transition: transform 0.6s cubic-bezier(.3,1.4,.4,1), filter 0.6s ease;
+    animation: floatStar 3.4s ease-in-out infinite;
+  }
+  @keyframes floatStar{ 0%,100%{ transform: translateY(0) rotate(0deg);} 50%{ transform: translateY(-8px) rotate(6deg);} }
+
+  .star-wrap.opened .big-star{
+    transform: scale(1.4) rotate(20deg);
+    filter: drop-shadow(0 0 34px rgba(242,207,126,1));
+    animation: none;
+  }
+
+  .tap-hint{
+    font-size: 0.85rem; color: var(--gold-soft);
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:.5;} 50%{opacity:1;} }
+  .star-wrap.opened ~ .tap-hint{ display: none; }
+
+  /* ===== message card ===== */
+  .message-card{
+    max-width: 460px; width: 100%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(250,246,255,0.97));
+    color: #2a2340;
+    border-radius: 24px;
+    padding: clamp(1.7rem, 6vw, 2.5rem);
+    box-shadow: 0 24px 50px rgba(0,0,0,0.4);
+    border: 1px solid rgba(242,207,126,0.5);
+    margin-top: 1.2rem;
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none;
+  }
+  .message-card.show{ opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+  .message-emoji{ font-size: 1.9rem; margin-bottom: 0.5rem; display: inline-block; }
+  .message-title{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: clamp(1.5rem, 5.5vw, 1.9rem);
+    color: #6a4fc2;
+    margin: 0.2rem 0 0.9rem;
+  }
+  .message-body{
+    font-size: clamp(0.98rem, 3.2vw, 1.08rem);
+    line-height: 1.78;
+  }
+  .message-tag{
+    margin-top: 1.3rem;
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    color: #6a4fc2;
+  }
+
+  .sparkle-burst{ position: fixed; inset: 0; pointer-events: none; z-index: 6; }
+  .sb-piece{ position: absolute; top: 50%; left: 50%; width: 5px; height: 5px; border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<div class="stars-bg" id="starsBg"></div>
+
+<div class="wrap">
+
+  <p class="countdown-title"><b id="cdBigNumber">13</b> &nbsp;days until your birthday, Dhriti</p>
+  <div class="countdown" id="countdown"></div>
+
+  <div class="star-wrap" id="starWrap" role="button" tabindex="0" aria-label="Tap the star to make a wish">
+    <div class="star-glow"></div>
+    <div class="big-star">⭐</div>
+  </div>
+  <p class="tap-hint" id="tapHint">tap the star and make a wish</p>
+
+  <div class="message-card" id="messageCard">
+    <span class="message-emoji" id="msgEmoji">✨</span>
+    <h2 class="message-title" id="msgTitle">for you, Dhriti</h2>
+    <p class="message-body" id="msgBody"></p>
+    <p class="message-tag">— Aryan 🤍</p>
+  </div>
+
+</div>
+
+<div class="sparkle-burst" id="sparkleBurst"></div>
+
+<script>
+  /* =========================================================
+     CUSTOMIZE HERE — the only part you need to touch each day
+     ========================================================= */
+  const CONFIG = {
+    herName: "Dhriti",
+    yourName: "Aryan",
+    birthdayISO: "2026-09-06T00:00:00",
+    todayEmoji: "✨",
+    todayTitle: "for you, Dhriti",
+    todayMessage: "Thirteen days left. I like the idea that somewhere out there, a wish made under an ordinary night sky can still find its way to someone — so consider this one already sent, and already yours: that whatever you're working toward, whatever's weighing on you, and whatever's making you smile lately, all of it goes a little easier for you. That's the wish. You didn't even have to ask."
+  };
+
+  document.getElementById('msgEmoji').textContent = CONFIG.todayEmoji;
+  document.getElementById('msgTitle').textContent = CONFIG.todayTitle;
+  document.getElementById('msgBody').textContent = CONFIG.todayMessage;
+
+  /* ================= live countdown ================= */
+  const countdownEl = document.getElementById('countdown');
+  const cdBigNumber = document.getElementById('cdBigNumber');
+  const units = ['days','hours','minutes','seconds'];
+  const unitEls = {};
+  units.forEach(u=>{
+    const div = document.createElement('div');
+    div.className = 'cd-unit';
+    div.innerHTML = `<div class="cd-num" id="cd-${u}">0</div><div class="cd-label">${u}</div>`;
+    countdownEl.appendChild(div);
+    unitEls[u] = div.querySelector('.cd-num');
+  });
+
+  const target = new Date(CONFIG.birthdayISO).getTime();
+
+  function updateCountdown(){
+    const now = Date.now();
+    let diff = Math.max(0, target - now);
+
+    const days = Math.floor(diff / (1000*60*60*24));
+    diff -= days * (1000*60*60*24);
+    const hours = Math.floor(diff / (1000*60*60));
+    diff -= hours * (1000*60*60);
+    const minutes = Math.floor(diff / (1000*60));
+    diff -= minutes * (1000*60);
+    const seconds = Math.floor(diff / 1000);
+
+    unitEls.days.textContent = days;
+    unitEls.hours.textContent = String(hours).padStart(2,'0');
+    unitEls.minutes.textContent = String(minutes).padStart(2,'0');
+    unitEls.seconds.textContent = String(seconds).padStart(2,'0');
+    cdBigNumber.textContent = days;
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  /* ================= wishing star interaction ================= */
+  const starWrap = document.getElementById('starWrap');
+  const messageCard = document.getElementById('messageCard');
+  const tapHint = document.getElementById('tapHint');
+  const sparkleBurst = document.getElementById('sparkleBurst');
+  const sparkleColors = ['#f2cf7e', '#fbe6b0', '#b6a6ff', '#ffffff'];
+
+  function launchSparkles(){
+    for(let i=0;i<34;i++){
+      const p = document.createElement('div');
+      p.className = 'sb-piece';
+      p.style.background = sparkleColors[Math.floor(Math.random()*sparkleColors.length)];
+      p.style.top = (30 + Math.random()*15) + '%';
+      const angle = Math.random()*Math.PI*2;
+      const dist = 80 + Math.random()*220;
+      const dx = Math.cos(angle)*dist;
+      const dy = Math.sin(angle)*dist;
+      p.animate([
+        { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.2)`, opacity: 0 }
+      ], { duration: 1000 + Math.random()*500, easing: 'cubic-bezier(.2,.7,.3,1)' });
+      sparkleBurst.appendChild(p);
+      setTimeout(()=> p.remove(), 1700);
+    }
+  }
+
+  function openStar(){
+    if(starWrap.classList.contains('opened')) return;
+    starWrap.classList.add('opened');
+    tapHint.style.display = 'none';
+    launchSparkles();
+    setTimeout(()=>{
+      messageCard.classList.add('show');
+      messageCard.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 400);
+  }
+  starWrap.addEventListener('click', openStar);
+  starWrap.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openStar(); }
+  });
+
+  /* ================= ambience: stars + shooting stars ================= */
+  const starsBg = document.getElementById('starsBg');
+  for(let i=0;i<60;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = (Math.random()*100)+'vw';
+    s.style.top = (Math.random()*85)+'vh';
+    s.style.animationDuration = (2 + Math.random()*3)+'s';
+    s.style.animationDelay = (Math.random()*4)+'s';
+    starsBg.appendChild(s);
+  }
+  for(let i=0;i<3;i++){
+    const sh = document.createElement('div');
+    sh.className = 'shooting';
+    sh.style.top = (10 + Math.random()*30)+'vh';
+    sh.style.left = (50 + Math.random()*40)+'vw';
+    sh.style.animationDuration = (7 + Math.random()*5)+'s';
+    sh.style.animationDelay = (Math.random()*8)+'s';
+    starsBg.appendChild(sh);
+  }
+</script>
+
+</body>
+</html>
