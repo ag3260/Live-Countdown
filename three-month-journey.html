@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our little journey — three months</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Caveat:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root{
+    --sunset-1: #ff9a76;
+    --sunset-2: #ff6f9c;
+    --sunset-3: #a86bd6;
+    --cream: #fff6ee;
+    --ink: #4a2b3a;
+    --gold: #ffcf86;
+  }
+
+  html, body{
+    margin: 0; padding: 0;
+    min-height: 100%;
+    font-family: 'Quicksand', sans-serif;
+    color: var(--ink);
+    background: linear-gradient(180deg, #fff0e4, var(--cream) 55%, #ffe6ef);
+    overflow-x: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  .bg-float{ position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .fl{ position: absolute; bottom: -10%; opacity: 0.45; animation: floatUp linear infinite; }
+  @keyframes floatUp{
+    0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.5; }
+    100% { transform: translateY(-112vh) translateX(18px) rotate(24deg); opacity: 0; }
+  }
+
+  .wrap{
+    position: relative; z-index: 1;
+    min-height: 100svh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 2.6rem 1.2rem 4rem;
+  }
+
+  .header{ text-align: center; margin-bottom: 1.6rem; }
+  .eyebrow{
+    font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--sunset-2); opacity: 0.85; margin-bottom: 0.5rem;
+  }
+  .headline{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    color: var(--ink);
+    max-width: 380px;
+  }
+  .headline b{
+    font-style: normal;
+    font-weight: 700;
+    color: var(--sunset-2);
+  }
+
+  /* ===== journey path ===== */
+  .journey{
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    height: 420px;
+    margin: 1rem 0;
+  }
+  .journey svg{ position: absolute; inset: 0; width: 100%; height: 100%; }
+  .path-line{
+    fill: none;
+    stroke: url(#pathGrad);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 10 10;
+    opacity: 0.55;
+  }
+
+  .milestone{
+    position: absolute;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .milestone-dot{
+    width: 58px; height: 58px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sunset-1), var(--sunset-2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 10px 24px rgba(255,111,156,0.4);
+    transition: transform 0.4s cubic-bezier(.3,1.5,.4,1), box-shadow 0.4s ease;
+    position: relative;
+  }
+  .milestone-dot::after{
+    content: "";
+    position: absolute; inset: -6px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,111,156,0.4);
+    animation: ring 2.4s ease-out infinite;
+  }
+  .milestone.done .milestone-dot::after{ display: none; }
+  @keyframes ring{
+    0%   { transform: scale(1); opacity: 0.7; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+  .milestone.locked .milestone-dot{
+    background: linear-gradient(135deg, #d9d4e0, #c7bfd6);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  .milestone.locked .milestone-dot::after{ display: none; }
+  .milestone.done .milestone-dot{
+    background: linear-gradient(135deg, var(--gold), var(--sunset-1));
+    transform: scale(1.08);
+  }
+  .milestone-label{
+    margin-top: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    opacity: 0.75;
+    white-space: nowrap;
+  }
+
+  /* mini popup card near tapped milestone */
+  .mini-card{
+    position: absolute;
+    max-width: 230px;
+    background: #fffdfb;
+    border-radius: 16px;
+    padding: 0.9rem 1.1rem;
+    box-shadow: 0 14px 30px rgba(168,107,214,0.28);
+    border: 1px solid rgba(255,166,193,0.5);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .mini-card.show{ opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  .mini-card-emoji{ font-size: 1.1rem; margin-right: 4px; }
+
+  .progress-hint{
+    font-size: 0.82rem;
+    color: var(--sunset-2);
+    margin-top: 0.4rem;
+    opacity: 0.85;
+  }
+
+  /* ===== finale ===== */
+  .finale-card{
+    max-width: 460px; width: 100%;
+    background: linear-gradient(180deg, #fffdfb, #fff2e6);
+    border-radius: 26px;
+    padding: clamp(1.8rem, 6vw, 2.6rem);
+    box-shadow: 0 26px 54px rgba(255,111,156,0.3);
+    border: 1px solid rgba(255,207,134,0.6);
+    margin-top: 1rem;
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    pointer-events: none;
+  }
+  .finale-card.show{ opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+  .finale-emoji{ font-size: 2.2rem; display: block; margin-bottom: 0.6rem; }
+  .finale-title{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: clamp(1.7rem, 6.5vw, 2.2rem);
+    color: var(--sunset-2);
+    margin: 0 0 1rem;
+  }
+  .finale-body{
+    font-size: clamp(0.98rem, 3.2vw, 1.08rem);
+    line-height: 1.8;
+    text-align: left;
+  }
+  .finale-body p{ margin: 0 0 1rem; }
+  .finale-body p:last-child{ margin-bottom: 0; }
+  .finale-tag{
+    margin-top: 1.3rem;
+    font-family: 'Caveat', cursive;
+    font-size: 1.6rem;
+    color: var(--sunset-2);
+    text-align: right;
+  }
+
+  .confetti{ position: fixed; inset: 0; pointer-events: none; z-index: 6; }
+  .cf-piece{ position: absolute; top: 30%; left: 50%; width: 7px; height: 10px; }
+</style>
+</head>
+<body>
+
+<div class="bg-float" id="bgFloat"></div>
+
+<div class="wrap">
+
+  <div class="header">
+    <p class="eyebrow">a small walk back</p>
+    <p class="headline">Three months in — <b>tap each stop</b> along the way</p>
+  </div>
+
+  <div class="journey" id="journey">
+    <svg viewBox="0 0 380 420" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="pathGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ff9a76"/>
+          <stop offset="50%" stop-color="#ff6f9c"/>
+          <stop offset="100%" stop-color="#a86bd6"/>
+        </linearGradient>
+      </defs>
+      <path class="path-line" d="M 60 60 C 220 60, 220 190, 60 210 C -60 230, -60 350, 190 360" />
+    </svg>
+
+    <div class="milestone" id="m1" style="left:60px; top:60px;">
+      <div class="milestone-dot">🌱</div>
+      <div class="milestone-label">month one</div>
+    </div>
+    <div class="milestone locked" id="m2" style="left:60px; top:210px;">
+      <div class="milestone-dot">🌤️</div>
+      <div class="milestone-label">month two</div>
+    </div>
+    <div class="milestone locked" id="m3" style="left:190px; top:360px;">
+      <div class="milestone-dot">🌸</div>
+      <div class="milestone-label">month three</div>
+    </div>
+
+    <div class="mini-card" id="card1"></div>
+    <div class="mini-card" id="card2"></div>
+    <div class="mini-card" id="card3"></div>
+  </div>
+
+  <p class="progress-hint" id="progressHint">tap "month one" to begin</p>
+
+  <div class="finale-card" id="finaleCard">
+    <span class="finale-emoji">💗</span>
+    <h2 class="finale-title">and now, three months, Dhriti</h2>
+    <div class="finale-body">
+      <p>Looking back at all three stops, it's wild how much can happen in ninety-something days — and how easily you became the best part of most of them.</p>
+      <p>Thank you for meeting me halfway on the awkward early days, for settling into something steady with me, and for still making the ordinary days feel a little brighter.</p>
+      <p>Here's to whatever month four looks like — I'm looking forward to finding out with you.</p>
+    </div>
+    <p class="finale-tag">— Aryan 🤍</p>
+  </div>
+
+</div>
+
+<div class="confetti" id="confetti"></div>
+
+<script>
+  /* =========================================================
+     CUSTOMIZE HERE — edit each month's highlight text
+     ========================================================= */
+  const MONTH_CONTENT = {
+    m1: { emoji: "🌱", text: "The beginning — still learning each other's rhythms, and already looking forward to every text." },
+    m2: { emoji: "🌤️", text: "Things started feeling steady. Less performing, more just... being ourselves around each other." },
+    m3: { emoji: "🌸", text: "Somewhere in here it stopped feeling new and started feeling like home." }
+  };
+
+  const progressHint = document.getElementById('progressHint');
+  const finaleCard = document.getElementById('finaleCard');
+  const confettiEl = document.getElementById('confetti');
+  const confColors = ['#ff9a76', '#ff6f9c', '#a86bd6', '#ffcf86', '#ffd6e4'];
+
+  const order = ['m1', 'm2', 'm3'];
+  let progressIndex = 0;
+
+  function launchConfetti(){
+    for(let i=0;i<40;i++){
+      const p = document.createElement('div');
+      p.className = 'cf-piece';
+      p.style.background = confColors[Math.floor(Math.random()*confColors.length)];
+      const dx = (Math.random()-0.5) * 520;
+      const dy = 260 + Math.random()*300;
+      const rot = Math.random()*720 - 360;
+      p.animate([
+        { transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 1 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) rotate(${rot}deg)`, opacity: 0 }
+      ], { duration: 1500 + Math.random()*600, easing: 'cubic-bezier(.2,.7,.3,1)' });
+      confettiEl.appendChild(p);
+      setTimeout(()=> p.remove(), 2300);
+    }
+  }
+
+  function setupMilestone(id, side){
+    const el = document.getElementById(id);
+    const card = document.getElementById('card' + id.slice(1));
+    const content = MONTH_CONTENT[id];
+    card.innerHTML = `<span class="mini-card-emoji">${content.emoji}</span>${content.text}`;
+
+    // position card to the side of the dot
+    const left = parseInt(el.style.left);
+    const top = parseInt(el.style.top);
+    if(side === 'right'){
+      card.style.left = (left + 46) + 'px';
+      card.style.top = (top - 30) + 'px';
+    } else {
+      card.style.left = 'auto';
+      card.style.right = (380 - left + 46) + 'px';
+      card.style.top = (top - 30) + 'px';
+    }
+
+    el.addEventListener('click', ()=>{
+      if(el.classList.contains('locked') || el.classList.contains('done')) return;
+      el.classList.add('done');
+      card.classList.add('show');
+
+      progressIndex++;
+      if(progressIndex < order.length){
+        const nextEl = document.getElementById(order[progressIndex]);
+        nextEl.classList.remove('locked');
+        progressHint.textContent = `tap "month ${['one','two','three'][progressIndex]}" to continue`;
+      } else {
+        progressHint.textContent = "that's the whole walk — for now";
+        launchConfetti();
+        setTimeout(()=>{
+          finaleCard.classList.add('show');
+          finaleCard.scrollIntoView({behavior:'smooth', block:'center'});
+        }, 500);
+      }
+    });
+  }
+
+  setupMilestone('m1', 'right');
+  setupMilestone('m2', 'left');
+  setupMilestone('m3', 'right');
+
+  // fix card side logic for m2 (path curves left)
+  const card2 = document.getElementById('card2');
+  card2.style.left = '116px';
+  card2.style.right = 'auto';
+
+  const bgFloat = document.getElementById('bgFloat');
+  const bgEmojis = ['💗','🌸','✨'];
+  for(let i=0;i<12;i++){
+    const el = document.createElement('div');
+    el.className = 'fl';
+    el.textContent = bgEmojis[Math.floor(Math.random()*bgEmojis.length)];
+    el.style.left = (Math.random()*100)+'vw';
+    el.style.fontSize = (1 + Math.random()*1.1)+'rem';
+    el.style.animationDuration = (9 + Math.random()*10)+'s';
+    el.style.animationDelay = (Math.random()*10)+'s';
+    bgFloat.appendChild(el);
+  }
+</script>
+
+</body>
+</html>
