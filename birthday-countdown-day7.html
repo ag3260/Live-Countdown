@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Dhriti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Caveat:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root{
+    --sky-1: #cfe8ff;
+    --sky-2: #dcd3ff;
+    --sky-3: #f3d9ff;
+    --bubble-edge: #ffffff;
+    --lilac: #9a7fd9;
+    --blue: #6fb7e8;
+    --ink: #3a2b4a;
+  }
+
+  html, body{
+    margin: 0; padding: 0;
+    min-height: 100%;
+    font-family: 'Quicksand', sans-serif;
+    color: var(--ink);
+    background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 55%, var(--sky-3) 100%);
+    overflow-x: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  /* ---------- background: floating bubbles ---------- */
+  .bg-layer{ position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+
+  .bg-bubble{
+    position: absolute;
+    bottom: -12%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9), rgba(255,255,255,0.15) 55%, rgba(255,255,255,0.05) 100%);
+    border: 1px solid rgba(255,255,255,0.5);
+    opacity: 0;
+    animation: bubbleUp linear infinite;
+  }
+  @keyframes bubbleUp{
+    0%   { transform: translateY(0) translateX(0); opacity: 0; }
+    10%  { opacity: 0.75; }
+    90%  { opacity: 0.6; }
+    100% { transform: translateY(-118vh) translateX(24px); opacity: 0; }
+  }
+
+  .wrap{
+    position: relative; z-index: 1;
+    min-height: 100svh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 2.4rem 1.3rem 3rem;
+  }
+
+  /* ===== countdown ===== */
+  .countdown-title{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.4rem, 5.2vw, 1.9rem);
+    color: var(--lilac);
+    margin: 0 0 1.2rem;
+  }
+  .countdown-title b{
+    font-style: normal;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    color: var(--blue);
+  }
+
+  .countdown{ display: flex; gap: 10px; margin-bottom: 2.6rem; }
+  .cd-unit{
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.7);
+    border-radius: 16px;
+    padding: 0.8rem 0.9rem;
+    min-width: 62px;
+    box-shadow: 0 10px 24px rgba(154,127,217,0.2);
+  }
+  .cd-num{
+    font-weight: 700;
+    font-size: clamp(1.3rem, 5vw, 1.8rem);
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .cd-label{
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0.55;
+    margin-top: 0.2rem;
+  }
+
+  /* ===== center bubble interaction ===== */
+  .bubble-wrap{
+    position: relative;
+    width: clamp(150px, 42vw, 190px);
+    height: clamp(150px, 42vw, 190px);
+    margin-bottom: 1.2rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .main-bubble{
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 26%, rgba(255,255,255,0.95), rgba(255,255,255,0.25) 50%, rgba(154,127,217,0.15) 100%);
+    border: 1.5px solid rgba(255,255,255,0.8);
+    box-shadow: 0 20px 40px rgba(111,183,232,0.35), inset 0 0 30px rgba(255,255,255,0.5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    animation: floatBubble 3.6s ease-in-out infinite;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+  @keyframes floatBubble{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-10px);} }
+
+  .bubble-wrap.popped .main-bubble{
+    transform: scale(1.5);
+    opacity: 0;
+  }
+
+  .shard{
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.95), rgba(111,183,232,0.3));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .tap-hint{
+    font-size: 0.85rem; color: var(--lilac);
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:.5;} 50%{opacity:1;} }
+  .bubble-wrap.popped ~ .tap-hint{ display: none; }
+
+  /* ===== message card ===== */
+  .message-card{
+    max-width: 460px; width: 100%;
+    background: #fffdfb;
+    border-radius: 24px;
+    padding: clamp(1.7rem, 6vw, 2.5rem);
+    box-shadow: 0 20px 46px rgba(154,127,217,0.28);
+    border: 1px solid rgba(154,127,217,0.35);
+    margin-top: 1.2rem;
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    pointer-events: none;
+  }
+  .message-card.show{ opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+  .message-emoji{ font-size: 1.9rem; margin-bottom: 0.5rem; display: inline-block; }
+  .message-title{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: clamp(1.5rem, 5.5vw, 1.9rem);
+    color: var(--lilac);
+    margin: 0.2rem 0 0.9rem;
+  }
+  .message-body{
+    font-size: clamp(0.98rem, 3.2vw, 1.08rem);
+    line-height: 1.78;
+  }
+  .message-tag{
+    margin-top: 1.3rem;
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    color: var(--lilac);
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-layer" id="bgLayer"></div>
+
+<div class="wrap">
+
+  <p class="countdown-title"><b id="cdBigNumber">9</b> &nbsp;days until your birthday, Dhriti</p>
+  <div class="countdown" id="countdown"></div>
+
+  <div class="bubble-wrap" id="bubbleWrap" role="button" tabindex="0" aria-label="Pop the bubble">
+    <div class="main-bubble">🤍</div>
+  </div>
+  <p class="tap-hint" id="tapHint">tap the bubble to pop it</p>
+
+  <div class="message-card" id="messageCard">
+    <span class="message-emoji">🫧</span>
+    <h2 class="message-title">for you, Dhriti</h2>
+    <p class="message-body" id="msgBody">Nine days left now. Some thoughts feel exactly like this bubble — light, a little fragile, floating around in my head until they finally reach you: that I'm genuinely happy, most days, simply because you exist in them too.</p>
+    <p class="message-tag">— Aryan ❤️</p>
+  </div>
+
+</div>
+
+<script>
+  /* ================= live countdown to birthday ================= */
+  const BIRTHDAY_ISO = "2026-09-06T00:00:00";
+  const countdownEl = document.getElementById('countdown');
+  const cdBigNumber = document.getElementById('cdBigNumber');
+  const units = ['days','hours','minutes','seconds'];
+  const unitEls = {};
+  units.forEach(u=>{
+    const div = document.createElement('div');
+    div.className = 'cd-unit';
+    div.innerHTML = `<div class="cd-num" id="cd-${u}">0</div><div class="cd-label">${u}</div>`;
+    countdownEl.appendChild(div);
+    unitEls[u] = div.querySelector('.cd-num');
+  });
+
+  const target = new Date(BIRTHDAY_ISO).getTime();
+
+  function updateCountdown(){
+    const now = Date.now();
+    let diff = Math.max(0, target - now);
+
+    const days = Math.floor(diff / (1000*60*60*24));
+    diff -= days * (1000*60*60*24);
+    const hours = Math.floor(diff / (1000*60*60));
+    diff -= hours * (1000*60*60);
+    const minutes = Math.floor(diff / (1000*60));
+    diff -= minutes * (1000*60);
+    const seconds = Math.floor(diff / 1000);
+
+    unitEls.days.textContent = days;
+    unitEls.hours.textContent = String(hours).padStart(2,'0');
+    unitEls.minutes.textContent = String(minutes).padStart(2,'0');
+    unitEls.seconds.textContent = String(seconds).padStart(2,'0');
+    cdBigNumber.textContent = days;
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  /* ================= bubble pop interaction ================= */
+  const bubbleWrap = document.getElementById('bubbleWrap');
+  const messageCard = document.getElementById('messageCard');
+  const tapHint = document.getElementById('tapHint');
+  const shardColors = ['rgba(255,255,255,0.95)', 'rgba(154,127,217,0.5)', 'rgba(111,183,232,0.5)'];
+
+  function launchShards(){
+    for(let i=0;i<22;i++){
+      const s = document.createElement('div');
+      s.className = 'shard';
+      s.style.background = shardColors[Math.floor(Math.random()*shardColors.length)];
+      const angle = Math.random()*Math.PI*2;
+      const dist = 60 + Math.random()*140;
+      const dx = Math.cos(angle)*dist;
+      const dy = Math.sin(angle)*dist;
+      s.animate([
+        { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.2)`, opacity: 0 }
+      ], { duration: 700 + Math.random()*400, easing: 'cubic-bezier(.2,.7,.3,1)' });
+      bubbleWrap.appendChild(s);
+      setTimeout(()=> s.remove(), 1200);
+    }
+  }
+
+  function popBubble(){
+    if(bubbleWrap.classList.contains('popped')) return;
+    bubbleWrap.classList.add('popped');
+    tapHint.style.display = 'none';
+    launchShards();
+    setTimeout(()=>{
+      messageCard.classList.add('show');
+      messageCard.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 500);
+  }
+  bubbleWrap.addEventListener('click', popBubble);
+  bubbleWrap.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); popBubble(); }
+  });
+
+  /* ================= background: floating bubbles ================= */
+  const bgLayer = document.getElementById('bgLayer');
+  for(let i=0;i<16;i++){
+    const b = document.createElement('div');
+    b.className = 'bg-bubble';
+    const size = 10 + Math.random()*30;
+    b.style.width = size+'px';
+    b.style.height = size+'px';
+    b.style.left = (Math.random()*100)+'vw';
+    b.style.animationDuration = (10 + Math.random()*12)+'s';
+    b.style.animationDelay = (Math.random()*14)+'s';
+    bgLayer.appendChild(b);
+  }
+</script>
+
+</body>
+</html>
