@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Dhriti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Caveat:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root{
+    --sky-1: #eaf3ff;
+    --sky-2: #fdf3e6;
+    --sky-3: #ffe9ef;
+    --paper: #fffdf8;
+    --ink-line: #b9c7dd;
+    --blue: #7fa8d9;
+    --coral: #e88a7a;
+    --ink: #3a3450;
+  }
+
+  html, body{
+    margin: 0; padding: 0;
+    min-height: 100%;
+    font-family: 'Quicksand', sans-serif;
+    color: var(--ink);
+    background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 55%, var(--sky-3) 100%);
+    overflow-x: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  /* ---------- background: drifting paper planes ---------- */
+  .bg-layer{ position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+
+  .bg-plane{
+    position: absolute;
+    font-size: 1.3rem;
+    color: var(--blue);
+    opacity: 0;
+    animation: flyPlane linear infinite;
+  }
+  @keyframes flyPlane{
+    0%   { transform: translate(-10vw, 0) rotate(6deg); opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.6; }
+    100% { transform: translate(115vw, -14vh) rotate(6deg); opacity: 0; }
+  }
+
+  .wrap{
+    position: relative; z-index: 1;
+    min-height: 100svh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 2.4rem 1.3rem 3rem;
+  }
+
+  /* ===== countdown ===== */
+  .countdown-title{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.4rem, 5.2vw, 1.9rem);
+    color: var(--coral);
+    margin: 0 0 1.2rem;
+  }
+  .countdown-title b{
+    font-style: normal;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    color: var(--blue);
+  }
+
+  .countdown{ display: flex; gap: 10px; margin-bottom: 2.6rem; }
+  .cd-unit{
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.8);
+    border-radius: 16px;
+    padding: 0.8rem 0.9rem;
+    min-width: 62px;
+    box-shadow: 0 10px 24px rgba(127,168,217,0.18);
+  }
+  .cd-num{
+    font-weight: 700;
+    font-size: clamp(1.3rem, 5vw, 1.8rem);
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .cd-label{
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0.55;
+    margin-top: 0.2rem;
+  }
+
+  /* ===== center paper plane / unfold interaction ===== */
+  .plane-wrap{
+    position: relative;
+    width: clamp(140px, 40vw, 180px);
+    height: clamp(110px, 32vw, 140px);
+    margin-bottom: 1.2rem;
+    cursor: pointer;
+    perspective: 800px;
+  }
+  .plane-icon{
+    font-size: clamp(3.2rem, 12vw, 4.2rem);
+    display: flex; align-items: center; justify-content: center;
+    height: 100%;
+    color: var(--blue);
+    filter: drop-shadow(0 10px 18px rgba(127,168,217,0.4));
+    animation: bobPlane 3s ease-in-out infinite;
+    transition: opacity 0.5s ease, transform 0.6s ease;
+  }
+  @keyframes bobPlane{ 0%,100%{ transform: translateY(0) rotate(0deg);} 50%{ transform: translateY(-8px) rotate(-4deg);} }
+
+  .plane-wrap.unfolded .plane-icon{
+    opacity: 0;
+    transform: scale(0.5) rotate(15deg);
+  }
+
+  .unfold-paper{
+    position: absolute;
+    inset: 0;
+    background: var(--paper);
+    border-radius: 6px;
+    box-shadow: 0 16px 34px rgba(127,168,217,0.3);
+    opacity: 0;
+    transform: scale(0.3) rotate(-8deg);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.2,.8,.3,1.1);
+    display: flex; align-items: center; justify-content: center;
+    padding: 10px;
+  }
+  .plane-wrap.unfolded .unfold-paper{
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  .unfold-paper::before{
+    content: "";
+    position: absolute; inset: 6px;
+    border: 1px dashed var(--ink-line);
+    border-radius: 3px;
+  }
+  .unfold-glyph{ font-size: 1.6rem; }
+
+  .tap-hint{
+    font-size: 0.85rem; color: var(--coral);
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:.5;} 50%{opacity:1;} }
+  .plane-wrap.unfolded ~ .tap-hint{ display: none; }
+
+  /* ===== message card ===== */
+  .message-card{
+    max-width: 460px; width: 100%;
+    background: var(--paper);
+    border-radius: 24px;
+    padding: clamp(1.7rem, 6vw, 2.5rem);
+    box-shadow: 0 20px 46px rgba(127,168,217,0.25);
+    border: 1px solid rgba(232,138,122,0.35);
+    margin-top: 1.2rem;
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    pointer-events: none;
+  }
+  .message-card.show{ opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+  .message-emoji{ font-size: 1.9rem; margin-bottom: 0.5rem; display: inline-block; }
+  .message-title{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: clamp(1.5rem, 5.5vw, 1.9rem);
+    color: var(--coral);
+    margin: 0.2rem 0 0.9rem;
+  }
+  .message-body{
+    font-size: clamp(0.98rem, 3.2vw, 1.08rem);
+    line-height: 1.78;
+  }
+  .message-tag{
+    margin-top: 1.3rem;
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    color: var(--coral);
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-layer" id="bgLayer"></div>
+
+<div class="wrap">
+
+  <p class="countdown-title"><b id="cdBigNumber">8</b> &nbsp;days until your birthday, Dhriti</p>
+  <div class="countdown" id="countdown"></div>
+
+  <div class="plane-wrap" id="planeWrap" role="button" tabindex="0" aria-label="Unfold the paper plane">
+    <div class="plane-icon">✈️</div>
+    <div class="unfold-paper"><span class="unfold-glyph">🤍</span></div>
+  </div>
+  <p class="tap-hint" id="tapHint">tap to unfold it</p>
+
+  <div class="message-card" id="messageCard">
+    <span class="message-emoji">📩</span>
+    <h2 class="message-title">for you, Dhriti</h2>
+    <p class="message-body" id="msgBody">Eight days left now. I hope you know how capable you actually are — more than you give yourself credit for on the days that feel hard. Walk into today a little taller, a little more sure of yourself, because you've earned that confidence. And whatever else today brings, I hope it brings you a reason to smile too.</p>
+    <p class="message-tag">— Aryan ❤️</p>
+  </div>
+
+</div>
+
+<script>
+  /* ================= live countdown to birthday ================= */
+  const BIRTHDAY_ISO = "2026-09-06T00:00:00";
+  const countdownEl = document.getElementById('countdown');
+  const cdBigNumber = document.getElementById('cdBigNumber');
+  const units = ['days','hours','minutes','seconds'];
+  const unitEls = {};
+  units.forEach(u=>{
+    const div = document.createElement('div');
+    div.className = 'cd-unit';
+    div.innerHTML = `<div class="cd-num" id="cd-${u}">0</div><div class="cd-label">${u}</div>`;
+    countdownEl.appendChild(div);
+    unitEls[u] = div.querySelector('.cd-num');
+  });
+
+  const target = new Date(BIRTHDAY_ISO).getTime();
+
+  function updateCountdown(){
+    const now = Date.now();
+    let diff = Math.max(0, target - now);
+
+    const days = Math.floor(diff / (1000*60*60*24));
+    diff -= days * (1000*60*60*24);
+    const hours = Math.floor(diff / (1000*60*60));
+    diff -= hours * (1000*60*60);
+    const minutes = Math.floor(diff / (1000*60));
+    diff -= minutes * (1000*60);
+    const seconds = Math.floor(diff / 1000);
+
+    unitEls.days.textContent = days;
+    unitEls.hours.textContent = String(hours).padStart(2,'0');
+    unitEls.minutes.textContent = String(minutes).padStart(2,'0');
+    unitEls.seconds.textContent = String(seconds).padStart(2,'0');
+    cdBigNumber.textContent = days;
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  /* ================= unfold interaction ================= */
+  const planeWrap = document.getElementById('planeWrap');
+  const messageCard = document.getElementById('messageCard');
+  const tapHint = document.getElementById('tapHint');
+
+  function unfoldPlane(){
+    if(planeWrap.classList.contains('unfolded')) return;
+    planeWrap.classList.add('unfolded');
+    tapHint.style.display = 'none';
+    setTimeout(()=>{
+      messageCard.classList.add('show');
+      messageCard.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 600);
+  }
+  planeWrap.addEventListener('click', unfoldPlane);
+  planeWrap.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); unfoldPlane(); }
+  });
+
+  /* ================= background: drifting paper planes ================= */
+  const bgLayer = document.getElementById('bgLayer');
+  for(let i=0;i<9;i++){
+    const p = document.createElement('div');
+    p.className = 'bg-plane';
+    p.textContent = '✈️';
+    p.style.top = (5 + Math.random()*55)+'vh';
+    p.style.fontSize = (1 + Math.random()*0.8)+'rem';
+    p.style.animationDuration = (14 + Math.random()*12)+'s';
+    p.style.animationDelay = (Math.random()*16)+'s';
+    bgLayer.appendChild(p);
+  }
+</script>
+
+</body>
+</html>
