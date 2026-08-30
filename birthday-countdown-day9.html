@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Dhriti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Caveat:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root{
+    --teal-deep: #12313a;
+    --teal-mid: #1f4d54;
+    --teal-light: #3f7d78;
+    --coral: #ff8f70;
+    --gold: #f2c879;
+    --cream: #fdf6ea;
+    --ink: #fdf6ea;
+  }
+
+  html, body{
+    margin: 0; padding: 0;
+    min-height: 100%;
+    font-family: 'Quicksand', sans-serif;
+    color: var(--ink);
+    background: radial-gradient(ellipse at 50% 0%, var(--teal-light) 0%, var(--teal-mid) 45%, var(--teal-deep) 100%);
+    overflow-x: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  /* ---------- background: floating music notes ---------- */
+  .bg-layer{ position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+
+  .bg-note{
+    position: absolute;
+    bottom: -10%;
+    font-size: 1.4rem;
+    color: rgba(242,200,121,0.55);
+    opacity: 0;
+    animation: floatNote linear infinite;
+  }
+  @keyframes floatNote{
+    0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.65; }
+    100% { transform: translateY(-115vh) translateX(26px) rotate(20deg); opacity: 0; }
+  }
+
+  .wrap{
+    position: relative; z-index: 1;
+    min-height: 100svh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 2.4rem 1.3rem 3rem;
+  }
+
+  /* ===== countdown ===== */
+  .countdown-title{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.4rem, 5.2vw, 1.9rem);
+    color: var(--gold);
+    margin: 0 0 1.2rem;
+  }
+  .countdown-title b{
+    font-style: normal;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    color: var(--coral);
+  }
+
+  .countdown{ display: flex; gap: 10px; margin-bottom: 2.6rem; }
+  .cd-unit{
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    padding: 0.8rem 0.9rem;
+    min-width: 62px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+  }
+  .cd-num{
+    font-weight: 700;
+    font-size: clamp(1.3rem, 5vw, 1.8rem);
+    color: var(--cream);
+    font-variant-numeric: tabular-nums;
+  }
+  .cd-label{
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cream);
+    opacity: 0.55;
+    margin-top: 0.2rem;
+  }
+
+  /* ===== vinyl record interaction ===== */
+  .vinyl-wrap{
+    position: relative;
+    width: clamp(150px, 42vw, 190px);
+    height: clamp(150px, 42vw, 190px);
+    margin-bottom: 1.3rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .vinyl{
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background:
+      repeating-radial-gradient(circle at center, #1a1a1a 0 3px, #262626 3px 6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .vinyl-label{
+    width: 38%; height: 38%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, var(--gold), var(--coral) 70%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    box-shadow: inset 0 0 0 3px rgba(0,0,0,0.3);
+  }
+  .vinyl-hole{
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--teal-deep);
+  }
+
+  .vinyl.playing{
+    animation: spinVinyl 3s linear infinite;
+  }
+  @keyframes spinVinyl{ to { transform: rotate(360deg); } }
+
+  .tonearm{
+    position: absolute;
+    top: -6%; right: -8%;
+    width: 46%;
+    height: 46%;
+    border: 3px solid var(--gold);
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    transform: rotate(-40deg);
+    transform-origin: 80% 20%;
+    transition: transform 0.6s cubic-bezier(.3,1,.4,1);
+    opacity: 0.8;
+  }
+  .vinyl-wrap.playing .tonearm{ transform: rotate(0deg); }
+
+  .tap-hint{
+    font-size: 0.85rem; color: var(--gold);
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:.5;} 50%{opacity:1;} }
+  .vinyl-wrap.playing ~ .tap-hint{ display: none; }
+
+  /* ===== message card ===== */
+  .message-card{
+    max-width: 460px; width: 100%;
+    background: var(--cream);
+    color: #3a2b3a;
+    border-radius: 24px;
+    padding: clamp(1.7rem, 6vw, 2.5rem);
+    box-shadow: 0 24px 50px rgba(0,0,0,0.35);
+    border: 1px solid rgba(242,200,121,0.5);
+    margin-top: 1.2rem;
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    pointer-events: none;
+  }
+  .message-card.show{ opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+  .message-emoji{ font-size: 1.9rem; margin-bottom: 0.5rem; display: inline-block; }
+  .message-title{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: clamp(1.5rem, 5.5vw, 1.9rem);
+    color: #c96b3f;
+    margin: 0.2rem 0 0.9rem;
+  }
+  .message-body{
+    font-size: clamp(0.98rem, 3.2vw, 1.08rem);
+    line-height: 1.78;
+  }
+  .message-tag{
+    margin-top: 1.3rem;
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    color: #c96b3f;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-layer" id="bgLayer"></div>
+
+<div class="wrap">
+
+  <p class="countdown-title"><b id="cdBigNumber">7</b> &nbsp;days until your birthday, Dhriti</p>
+  <div class="countdown" id="countdown"></div>
+
+  <div class="vinyl-wrap" id="vinylWrap" role="button" tabindex="0" aria-label="Play the record">
+    <div class="tonearm"></div>
+    <div class="vinyl" id="vinyl">
+      <div class="vinyl-label">🤍</div>
+    </div>
+  </div>
+  <p class="tap-hint" id="tapHint">tap to play</p>
+
+  <div class="message-card" id="messageCard">
+    <span class="message-emoji">🎵</span>
+    <h2 class="message-title">for you, Dhriti</h2>
+    <p class="message-body" id="msgBody">Seven days left now. There's a song that reminds me of you every time it plays — not because of the lyrics, just because of when I first heard it with you around. Funny how music does that: turns an ordinary moment into something you keep coming back to, just like I keep coming back to thinking about you.</p>
+    <p class="message-tag">— Aryan ❤️</p>
+  </div>
+
+</div>
+
+<script>
+  /* ================= live countdown to birthday ================= */
+  const BIRTHDAY_ISO = "2026-09-06T00:00:00";
+  const countdownEl = document.getElementById('countdown');
+  const cdBigNumber = document.getElementById('cdBigNumber');
+  const units = ['days','hours','minutes','seconds'];
+  const unitEls = {};
+  units.forEach(u=>{
+    const div = document.createElement('div');
+    div.className = 'cd-unit';
+    div.innerHTML = `<div class="cd-num" id="cd-${u}">0</div><div class="cd-label">${u}</div>`;
+    countdownEl.appendChild(div);
+    unitEls[u] = div.querySelector('.cd-num');
+  });
+
+  const target = new Date(BIRTHDAY_ISO).getTime();
+
+  function updateCountdown(){
+    const now = Date.now();
+    let diff = Math.max(0, target - now);
+
+    const days = Math.floor(diff / (1000*60*60*24));
+    diff -= days * (1000*60*60*24);
+    const hours = Math.floor(diff / (1000*60*60));
+    diff -= hours * (1000*60*60);
+    const minutes = Math.floor(diff / (1000*60));
+    diff -= minutes * (1000*60);
+    const seconds = Math.floor(diff / 1000);
+
+    unitEls.days.textContent = days;
+    unitEls.hours.textContent = String(hours).padStart(2,'0');
+    unitEls.minutes.textContent = String(minutes).padStart(2,'0');
+    unitEls.seconds.textContent = String(seconds).padStart(2,'0');
+    cdBigNumber.textContent = days;
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  /* ================= vinyl play interaction ================= */
+  const vinylWrap = document.getElementById('vinylWrap');
+  const vinyl = document.getElementById('vinyl');
+  const messageCard = document.getElementById('messageCard');
+  const tapHint = document.getElementById('tapHint');
+
+  function playRecord(){
+    if(vinylWrap.classList.contains('playing')) return;
+    vinylWrap.classList.add('playing');
+    vinyl.classList.add('playing');
+    tapHint.style.display = 'none';
+    setTimeout(()=>{
+      messageCard.classList.add('show');
+      messageCard.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 700);
+  }
+  vinylWrap.addEventListener('click', playRecord);
+  vinylWrap.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); playRecord(); }
+  });
+
+  /* ================= background: floating music notes ================= */
+  const bgLayer = document.getElementById('bgLayer');
+  const noteChars = ['♪','♫','♬','♩'];
+  for(let i=0;i<16;i++){
+    const n = document.createElement('div');
+    n.className = 'bg-note';
+    n.textContent = noteChars[Math.floor(Math.random()*noteChars.length)];
+    n.style.left = (Math.random()*100)+'vw';
+    n.style.fontSize = (1 + Math.random()*1.1)+'rem';
+    n.style.animationDuration = (10 + Math.random()*12)+'s';
+    n.style.animationDelay = (Math.random()*14)+'s';
+    bgLayer.appendChild(n);
+  }
+</script>
+
+</body>
+</html>
